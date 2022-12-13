@@ -1,5 +1,29 @@
 import SwiftUI
 
+class ViewModel: ObservableObject {
+  @Published var pokemon =  [PokemonModel]()
+  
+  func onAppear() async {
+    self.pokemon = [
+      .init(
+        id: UUID(),
+        name: "bulbasaur",
+        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
+      ),
+      .init(
+        id: UUID(),
+        name: "ivysaur",
+        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
+      ),
+      .init(
+        id: UUID(),
+        name: "venusaur",
+        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
+      ),
+    ]
+  }
+}
+
 struct PokemonModel: Identifiable {
   let id: UUID
   let name: String
@@ -7,17 +31,22 @@ struct PokemonModel: Identifiable {
 }
 
 struct ContentView: View {
-  let pokemon: [PokemonModel]
+  @ObservedObject var viewModel = ViewModel()
   
   var body: some View {
     NavigationView {
       List {
-        ForEach(pokemon) { pokemonModel in
+        ForEach(viewModel.pokemon) { pokemonModel in
           PokemonView(pokemon: pokemonModel)
         }
       }
       .listStyle(.plain)
       .navigationTitle("Pokemon")
+    }
+    .onAppear {
+      Task {
+        await viewModel.onAppear()
+      }
     }
   }
 }
@@ -46,23 +75,6 @@ struct PokemonView: View {
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView(pokemon: [
-      .init(
-        id: UUID(),
-        name: "bulbasaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
-      ),
-      .init(
-        id: UUID(),
-        name: "ivysaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
-      ),
-      .init(
-        id: UUID(),
-        name: "venusaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
-      ),
-    ])
-    //      .preferredColorScheme(.dark)
+    ContentView()
   }
 }
