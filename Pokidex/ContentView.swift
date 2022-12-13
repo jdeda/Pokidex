@@ -1,29 +1,68 @@
 import SwiftUI
 
 class ViewModel: ObservableObject {
-  @Published var pokemon =  [PokemonModel]()
+  @Published var pokemon = [PokemonModel]()
+  var pokemonClient = PokemonClient.liveValue
   
-  func onAppear() async {
-    self.pokemon = [
-      .init(
-        id: UUID(),
-        name: "bulbasaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
-      ),
-      .init(
-        id: UUID(),
-        name: "ivysaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
-      ),
-      .init(
-        id: UUID(),
-        name: "venusaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
-      ),
-    ]
+  @MainActor
+  func onAppear() async  {
+    do {
+      self.pokemon = try await pokemonClient.fetchPokemon()
+    } catch {
+      print(error)
+    }
   }
 }
 
+struct PokemonClient {
+  var fetchPokemon: @Sendable () async throws -> [PokemonModel]
+}
+
+extension PokemonClient {
+  
+  // API: https://pokeapi.co/
+  static var liveValue: Self {
+    .init(fetchPokemon: {
+      try? await Task.sleep(nanoseconds: NSEC_PER_SEC * 3)
+      return [
+        .init(
+          id: UUID(),
+          name: "bulbasaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
+        ),
+        .init(
+          id: UUID(),
+          name: "ivysaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
+        ),
+      ]
+    })
+  }
+}
+
+extension PokemonClient {
+  static var previewValue: Self {
+    .init(fetchPokemon: {
+      [
+        .init(
+          id: UUID(),
+          name: "bulbasaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
+        ),
+        .init(
+          id: UUID(),
+          name: "ivysaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
+        ),
+        .init(
+          id: UUID(),
+          name: "venusaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
+        ),
+      ]
+    })
+  }
+}
 struct PokemonModel: Identifiable {
   let id: UUID
   let name: String
