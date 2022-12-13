@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		97F8F1F7294903A500F3B9CB /* PokidexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F8F1F6294903A500F3B9CB /* PokidexApp.swift */; };
+		97F8F1F7294903A500F3B9CB /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F8F1F6294903A500F3B9CB /* Main.swift */; };
 		97F8F1F9294903A500F3B9CB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F8F1F8294903A500F3B9CB /* ContentView.swift */; };
 		97F8F1FB294903AA00F3B9CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97F8F1FA294903AA00F3B9CB /* Assets.xcassets */; };
 		97F8F1FE294903AA00F3B9CB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97F8F1FD294903AA00F3B9CB /* Preview Assets.xcassets */; };
@@ -15,7 +15,7 @@
 
 /* Begin PBXFileReference section */
 		97F8F1F3294903A500F3B9CB /* Pokidex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pokidex.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		97F8F1F6294903A500F3B9CB /* PokidexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokidexApp.swift; sourceTree = "<group>"; };
+		97F8F1F6294903A500F3B9CB /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		97F8F1F8294903A500F3B9CB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		97F8F1FA294903AA00F3B9CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97F8F1FD294903AA00F3B9CB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -51,7 +51,7 @@
 		97F8F1F5294903A500F3B9CB /* Pokidex */ = {
 			isa = PBXGroup;
 			children = (
-				97F8F1F6294903A500F3B9CB /* PokidexApp.swift */,
+				97F8F1F6294903A500F3B9CB /* Main.swift */,
 				97F8F1F8294903A500F3B9CB /* ContentView.swift */,
 				97F8F1FA294903AA00F3B9CB /* Assets.xcassets */,
 				97F8F1FC294903AA00F3B9CB /* Preview Content */,
@@ -138,7 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				97F8F1F9294903A500F3B9CB /* ContentView.swift in Sources */,
-				97F8F1F7294903A500F3B9CB /* PokidexApp.swift in Sources */,
+				97F8F1F7294903A500F3B9CB /* Main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
