@@ -22,8 +22,8 @@ struct ContentView: View {
   var body: some View {
     NavigationView {
       List {
-        ForEach(viewModel.pokemon) { pokemonModel in
-          PokemonView(pokemon: pokemonModel)
+        ForEach(viewModel.pokemon) { pokemon in
+          PokemonView(pokemon: pokemon)
         }
       }
       .listStyle(.plain)
@@ -53,7 +53,7 @@ struct PokemonView: View {
       .background(Color(.systemGray6))
       .clipShape(Circle())
       
-      Text(pokemon.name)
+      Text(pokemon.name.capitalized)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }
