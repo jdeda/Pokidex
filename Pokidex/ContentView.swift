@@ -1,7 +1,7 @@
 import SwiftUI
 
 class ViewModel: ObservableObject {
-  @Published var pokemon = [PokemonModel]()
+  @Published var pokemon = [PokemonClient.Pokemon]()
   var pokemonClient: PokemonClient
   
   init(pokemonClient: PokemonClient) {
@@ -14,110 +14,6 @@ class ViewModel: ObservableObject {
       self.pokemon.append(pokemon)
     }
   }
-}
-
-struct PokemonClient {
-  var fetchPokemon: @Sendable () -> AsyncStream<PokemonModel>
-}
-
-extension PokemonClient {
-  
-  // API: https://pokeapi.co/
-  static var liveValue: Self {
-    .init(fetchPokemon: {
-      AsyncStream { continuation in
-        Task {
-          struct Response: Codable {
-            let results: [PokemonResult]
-            
-            enum CodingKeys: CodingKey {
-              case results
-            }
-          }
-          struct PokemonResult: Codable {
-            let name: String
-            let url: URL
-          }
-          
-          struct PokemonDetails: Codable {
-            let name: String
-            let sprites: Sprites
-            
-            enum CodingKeys: CodingKey {
-              case name
-              case sprites
-            }
-          }
-          struct Sprites: Codable {
-            let front_default: URL
-            
-            enum CodingKeys: CodingKey {
-              case front_default
-            }
-          }
-          
-          let pokemonURLS = try await JSONDecoder().decode(
-            Response.self,
-            from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!).0
-          )
-            .results
-            .map(\.url)
-          
-          for url in pokemonURLS {
-            let pokemonDetail = try await JSONDecoder().decode(
-              PokemonDetails.self,
-              from: URLSession.shared.data(from: url).0
-            )
-            let pokemon = PokemonModel(
-              id: UUID(),
-              name: pokemonDetail.name,
-              imageURL: pokemonDetail.sprites.front_default
-            )
-            continuation.yield(pokemon)
-          }
-        }
-      }
-    })
-  }
-}
-
-extension PokemonClient {
-  static var previewValue: Self {
-    .init(fetchPokemon: {
-      AsyncStream { continuation in
-        Task {
-          let models: [PokemonModel] = [
-            .init(
-              id: UUID(),
-              name: "bulbasaur",
-              imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
-            ),
-            .init(
-              id: UUID(),
-              name: "ivysaur",
-              imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
-            ),
-            .init(
-              id: UUID(),
-              name: "venusaur",
-              imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
-            ),
-          ]
-          
-          for model in models {
-            try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
-            continuation.yield(model)
-          }
-        }
-      }
-    })
-  }
-}
-
-struct PokemonModel: Identifiable, Codable {
-  let id: UUID
-  let name: String
-  let imageURL: URL
 }
 
 struct ContentView: View {
@@ -142,7 +38,7 @@ struct ContentView: View {
 }
 
 struct PokemonView: View {
-  let pokemon: PokemonModel
+  let pokemon: PokemonClient.Pokemon
   
   var body: some View {
     HStack {
