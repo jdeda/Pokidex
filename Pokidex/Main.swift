@@ -4,7 +4,7 @@ import SwiftUI
 struct Main: App {
   var body: some Scene {
     WindowGroup {
-      ContentView()
+      ContentView(viewModel: .init(pokemonClient: .liveValue))
     }
   }
 }

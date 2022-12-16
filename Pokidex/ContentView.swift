@@ -2,7 +2,11 @@ import SwiftUI
 
 class ViewModel: ObservableObject {
   @Published var pokemon = [PokemonModel]()
-  var pokemonClient = PokemonClient.liveValue
+  var pokemonClient: PokemonClient
+  
+  init(pokemonClient: PokemonClient) {
+    self.pokemonClient = pokemonClient
+  }
   
   @MainActor
   func onAppear() async  {
@@ -77,29 +81,38 @@ extension PokemonClient {
   }
 }
 
-//extension PokemonClient {
-//  static var previewValue: Self {
-//    .init(fetchPokemon: {
-//      [
-//        .init(
-//          id: UUID(),
-//          name: "bulbasaur",
-//          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
-//        ),
-//        .init(
-//          id: UUID(),
-//          name: "ivysaur",
-//          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
-//        ),
-//        .init(
-//          id: UUID(),
-//          name: "venusaur",
-//          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
-//        ),
-//      ]
-//    })
-//  }
-//}
+extension PokemonClient {
+  static var previewValue: Self {
+    .init(fetchPokemon: {
+      AsyncStream { continuation in
+        Task {
+          let models: [PokemonModel] = [
+            .init(
+              id: UUID(),
+              name: "bulbasaur",
+              imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
+            ),
+            .init(
+              id: UUID(),
+              name: "ivysaur",
+              imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
+            ),
+            .init(
+              id: UUID(),
+              name: "venusaur",
+              imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
+            ),
+          ]
+          
+          for model in models {
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
+            continuation.yield(model)
+          }
+        }
+      }
+    })
+  }
+}
 
 struct PokemonModel: Identifiable, Codable {
   let id: UUID
@@ -108,7 +121,7 @@ struct PokemonModel: Identifiable, Codable {
 }
 
 struct ContentView: View {
-  @ObservedObject var viewModel = ViewModel()
+  @ObservedObject var viewModel: ViewModel
   
   var body: some View {
     NavigationView {
@@ -152,6 +165,6 @@ struct PokemonView: View {
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView()
+    ContentView(viewModel: .init(pokemonClient: .previewValue))
   }
 }
