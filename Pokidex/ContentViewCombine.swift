@@ -1,45 +1,45 @@
 import SwiftUI
 import Combine
 
-class ViewModel: ObservableObject {
-  @Published var pokemon = [PokemonClient.Pokemon]()
-  var pokemonClient: PokemonClient
+class ViewModelCombine: ObservableObject {
+  @Published var pokemon = [PokemonClientCombine.Pokemon]()
+  var pokemonClient: PokemonClientCombine = .live
+  var cancellables = Set<AnyCancellable>()
   
-  init(pokemonClient: PokemonClient) {
+  init(pokemonClient: PokemonClientCombine) {
     self.pokemonClient = pokemonClient
   }
   
-  @MainActor
-  func onAppear() async  {
-    for await pokemon in pokemonClient.fetchPokemon() {
-      self.pokemon.append(pokemon)
-    }
+  func onAppear()  {
+    self.pokemonClient.fetchPokemon
+      .receive(on: DispatchQueue.main)
+      .sink { self.pokemon.append($0) }
+      .store(in: &cancellables)
   }
 }
 
-struct ContentView: View {
-  @ObservedObject var viewModel: ViewModel
+
+struct ContentViewCombine: View {
+  @ObservedObject var viewModel: ViewModelCombine
   
   var body: some View {
     NavigationView {
       List {
         ForEach(viewModel.pokemon) { pokemon in
-          PokemonView(pokemon: pokemon)
+          PokemonViewCombine(pokemon: pokemon)
         }
       }
       .listStyle(.plain)
       .navigationTitle("Pokemon")
     }
     .onAppear {
-      Task {
-        await viewModel.onAppear()
-      }
+      viewModel.onAppear()
     }
   }
 }
 
-struct PokemonView: View {
-  let pokemon: PokemonClient.Pokemon
+struct PokemonViewCombine: View {
+  let pokemon: PokemonClientCombine.Pokemon
   
   var body: some View {
     HStack {
@@ -60,8 +60,8 @@ struct PokemonView: View {
   }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct ContentViewCombine_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView(viewModel: .init(pokemonClient: .previewValue))
+    ContentViewCombine(viewModel: .init(pokemonClient: .preview))
   }
 }
