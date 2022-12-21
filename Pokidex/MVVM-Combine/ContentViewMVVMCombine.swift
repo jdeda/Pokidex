@@ -19,7 +19,7 @@ class ViewModelCombine: ObservableObject {
 }
 
 
-struct ContentViewCombine: View {
+struct ContentViewMVVMCombine: View {
   @ObservedObject var viewModel: ViewModelCombine
   
   var body: some View {
@@ -60,8 +60,8 @@ struct PokemonViewCombine: View {
   }
 }
 
-struct ContentViewCombine_Previews: PreviewProvider {
+struct ContentViewMVVMCombine_Previews: PreviewProvider {
   static var previews: some View {
-    ContentViewCombine(viewModel: .init(pokemonClient: .preview))
+    ContentViewMVVMCombine(viewModel: .init(pokemonClient: .preview))
   }
 }
