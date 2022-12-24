@@ -3,7 +3,6 @@ import Combine
 
 class ViewModel: ObservableObject {
   @Published var pokemon = [PokemonClient.Pokemon]()
-  @Published var message = "Nice"
   var pokemonClient: PokemonClient
   
   init(pokemonClient: PokemonClient) {
@@ -20,7 +19,6 @@ class ViewModel: ObservableObject {
       debugPrint("onAppear", "finished in", pokemon)
       self.pokemon.append(pokemon)
     }
-    self.message = "onAppear finished in \(Date().timeIntervalSince(start)))"
   }
   
   @MainActor
@@ -32,7 +30,6 @@ class ViewModel: ObservableObject {
     for await pokemon in pokemonClient.fetchPokemonConcurrently() {
       self.pokemon.append(pokemon)
     }
-    self.message = "onAppearConcurrently finished in \(Date().timeIntervalSince(start)))"
   }
 }
 
@@ -40,21 +37,33 @@ struct ContentViewMVVMAsync: View {
   @ObservedObject var viewModel: ViewModel
   
   var body: some View {
-    NavigationView {
-      VStack {
-        Text("\(viewModel.pokemon.count)")
-        Text("\(viewModel.message)")
-        List {
-          ForEach(viewModel.pokemon, content: PokemonView.init)
+    List {
+      ForEach(viewModel.pokemon, content: PokemonView.init)
+    }
+    .listStyle(.plain)
+    
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Button {
+          
+        } label: {
+          Image(systemName: "clock.arrow.circlepath")
+            .help("Fetch serially")
+
         }
-        .listStyle(.plain)
+      }
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Button {
+
+        } label: {
+          Image(systemName: "clock.arrow.2.circlepath")
+            .help("Fetch parallelly")
+        }
       }
     }
-    .onAppear {
-      Task {
-        await viewModel.onAppearConcurrently()
-      }
-    }
+    .onAppear { Task {
+      await viewModel.onAppearConcurrently()
+    }}
   }
 }
 
