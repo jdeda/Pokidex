@@ -11,9 +11,25 @@ class ViewModelCombine: ObservableObject {
   }
   
   func onAppear()  {
+    let start = Date()
     self.pokemonClient.fetchPokemon
       .receive(on: DispatchQueue.main)
-      .sink { self.pokemon.append($0) }
+      .sink(receiveCompletion: { completion in
+        debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
+      }, receiveValue: { pokemon in
+        self.pokemon.append(pokemon)
+      })
+      .store(in: &cancellables)
+  }
+  func onAppearConcurrently()  {
+    let start = Date()
+    self.pokemonClient.fetchPokemonConcurrently
+      .receive(on: DispatchQueue.main)
+      .sink(receiveCompletion: { completion in
+        debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
+      }, receiveValue: { pokemon in
+        self.pokemon.append(pokemon)
+      })
       .store(in: &cancellables)
   }
 }
@@ -28,7 +44,7 @@ struct ContentViewMVVMCombine: View {
     }
     .listStyle(.plain)
     .onAppear {
-      viewModel.onAppear()
+      viewModel.onAppearConcurrently()
     }
   }
 }

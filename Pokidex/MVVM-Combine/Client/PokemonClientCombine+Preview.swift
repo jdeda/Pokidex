@@ -2,36 +2,67 @@ import Foundation
 import Combine
 
 extension PokemonClientCombine {
-  static var preview = Self.init(fetchPokemon: {
-    let models: [Pokemon] = [
-      .init(
-        id: UUID(),
-        name: "bulbasaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
-      ),
-      .init(
-        id: UUID(),
-        name: "ivysaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
-      ),
-      .init(
-        id: UUID(),
-        name: "venusaur",
-        imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
-      ),
-    ]
-    
-    let publisher = models.publisher.flatMap { pokemon in
-      return Future.init { promise in
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-          promise(Result.success(pokemon))
+  static var preview = Self.init(
+    fetchPokemon: {
+      let models: [Pokemon] = [
+        .init(
+          id: UUID(),
+          name: "bulbasaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
+        ),
+        .init(
+          id: UUID(),
+          name: "ivysaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
+        ),
+        .init(
+          id: UUID(),
+          name: "venusaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
+        ),
+      ]
+      
+      let publisher = models.publisher.flatMap { pokemon in
+        return Future.init { promise in
+          DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            promise(Result.success(pokemon))
+          }
         }
       }
-    }
-      .eraseToAnyPublisher()
-    
-    return publisher
-  }())
+        .eraseToAnyPublisher()
+      
+      return publisher
+    }(),
+    fetchPokemonConcurrently: {
+      let models: [Pokemon] = [
+        .init(
+          id: UUID(),
+          name: "bulbasaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")!
+        ),
+        .init(
+          id: UUID(),
+          name: "ivysaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png")!
+        ),
+        .init(
+          id: UUID(),
+          name: "venusaur",
+          imageURL: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png")!
+        ),
+      ]
+      
+      let publisher = models.publisher.flatMap { pokemon in
+        return Future.init { promise in
+          DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            promise(Result.success(pokemon))
+          }
+        }
+      }
+        .eraseToAnyPublisher()
+      
+      return publisher
+    }())
 }
 
 // MARK: - Private
