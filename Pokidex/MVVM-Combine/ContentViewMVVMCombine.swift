@@ -23,15 +23,10 @@ struct ContentViewMVVMCombine: View {
   @ObservedObject var viewModel: ViewModelCombine
   
   var body: some View {
-    NavigationView {
-      List {
-        ForEach(viewModel.pokemon) { pokemon in
-          PokemonViewCombine(pokemon: pokemon)
-        }
-      }
-      .listStyle(.plain)
-      .navigationTitle("Pokemon")
+    List {
+      ForEach(viewModel.pokemon, content: PokemonViewCombine.init)
     }
+    .listStyle(.plain)
     .onAppear {
       viewModel.onAppear()
     }

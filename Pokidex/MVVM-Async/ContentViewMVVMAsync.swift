@@ -23,12 +23,9 @@ struct ContentViewMVVMAsync: View {
   var body: some View {
     NavigationView {
       List {
-        ForEach(viewModel.pokemon) { pokemon in
-          PokemonView(pokemon: pokemon)
-        }
+        ForEach(viewModel.pokemon, content: PokemonView.init)
       }
       .listStyle(.plain)
-      .navigationTitle("Pokemon")
     }
     .onAppear {
       Task {
