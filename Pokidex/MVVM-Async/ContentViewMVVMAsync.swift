@@ -41,24 +41,20 @@ struct ContentViewMVVMAsync: View {
       ForEach(viewModel.pokemon, content: PokemonView.init)
     }
     .listStyle(.plain)
-    
     .toolbar {
-      ToolbarItem(placement: .navigationBarTrailing) {
-        Button {
-          
-        } label: {
-          Image(systemName: "clock.arrow.circlepath")
-            .help("Fetch serially")
+      ToolbarItemGroup.init(placement: .navigationBarTrailing) {
+          Button {
+            
+          } label: {
+            Image(systemName: "clock.arrow.circlepath")
+              .help("Fetch serially")
+          }
+          Button {
 
-        }
-      }
-      ToolbarItem(placement: .navigationBarTrailing) {
-        Button {
-
-        } label: {
-          Image(systemName: "clock.arrow.2.circlepath")
-            .help("Fetch parallelly")
-        }
+          } label: {
+            Image(systemName: "clock.arrow.2.circlepath")
+              .help("Fetch parallelly")
+          }
       }
     }
     .onAppear { Task {

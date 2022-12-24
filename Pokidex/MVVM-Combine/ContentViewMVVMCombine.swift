@@ -43,6 +43,22 @@ struct ContentViewMVVMCombine: View {
       ForEach(viewModel.pokemon, content: PokemonViewCombine.init)
     }
     .listStyle(.plain)
+    .toolbar {
+      ToolbarItemGroup.init(placement: .navigationBarTrailing) {
+          Button {
+            
+          } label: {
+            Image(systemName: "clock.arrow.circlepath")
+              .help("Fetch serially")
+          }
+          Button {
+
+          } label: {
+            Image(systemName: "clock.arrow.2.circlepath")
+              .help("Fetch parallelly")
+          }
+      }
+    }
     .onAppear {
       viewModel.onAppearConcurrently()
     }
