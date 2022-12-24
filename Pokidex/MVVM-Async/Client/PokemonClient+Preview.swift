@@ -2,16 +2,28 @@ import Foundation
 
 extension PokemonClient {
   static var preview: Self {
-    .init(fetchPokemon: {
-      AsyncStream { continuation in
-        Task {
-          for model in models {
-            try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
-            continuation.yield(model)
+    .init(
+      fetchPokemon: {
+        AsyncStream { continuation in
+          Task {
+            for model in models {
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
+              continuation.yield(model)
+            }
+          }
+        }
+      },
+      fetchPokemonConcurrently: {
+        AsyncStream { continuation in
+          Task {
+            for model in models {
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
+              continuation.yield(model)
+            }
           }
         }
       }
-    })
+    )
   }
 }
 

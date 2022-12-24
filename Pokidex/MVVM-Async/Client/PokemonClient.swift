@@ -2,6 +2,7 @@ import Foundation
 
 struct PokemonClient {
   var fetchPokemon: @Sendable () -> AsyncStream<Pokemon>
+  var fetchPokemonConcurrently: @Sendable () -> AsyncStream<Pokemon>
   
   struct Pokemon: Identifiable, Codable {
     let id: UUID

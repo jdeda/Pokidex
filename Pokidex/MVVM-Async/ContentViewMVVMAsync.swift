@@ -3,6 +3,7 @@ import Combine
 
 class ViewModel: ObservableObject {
   @Published var pokemon = [PokemonClient.Pokemon]()
+  @Published var message = "Nice"
   var pokemonClient: PokemonClient
   
   init(pokemonClient: PokemonClient) {
@@ -11,9 +12,27 @@ class ViewModel: ObservableObject {
   
   @MainActor
   func onAppear() async  {
+    let start = Date()
+    defer {
+      debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
+    }
     for await pokemon in pokemonClient.fetchPokemon() {
+      debugPrint("onAppear", "finished in", pokemon)
       self.pokemon.append(pokemon)
     }
+    self.message = "onAppear finished in \(Date().timeIntervalSince(start)))"
+  }
+  
+  @MainActor
+  func onAppearConcurrently() async  {
+    let start = Date()
+    defer {
+      debugPrint("onAppearConcurrently", "finished in", Date().timeIntervalSince(start))
+    }
+    for await pokemon in pokemonClient.fetchPokemonConcurrently() {
+      self.pokemon.append(pokemon)
+    }
+    self.message = "onAppearConcurrently finished in \(Date().timeIntervalSince(start)))"
   }
 }
 
@@ -22,14 +41,18 @@ struct ContentViewMVVMAsync: View {
   
   var body: some View {
     NavigationView {
-      List {
-        ForEach(viewModel.pokemon, content: PokemonView.init)
+      VStack {
+        Text("\(viewModel.pokemon.count)")
+        Text("\(viewModel.message)")
+        List {
+          ForEach(viewModel.pokemon, content: PokemonView.init)
+        }
+        .listStyle(.plain)
       }
-      .listStyle(.plain)
     }
     .onAppear {
       Task {
-        await viewModel.onAppear()
+        await viewModel.onAppearConcurrently()
       }
     }
   }

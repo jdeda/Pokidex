@@ -10,35 +10,67 @@ extension PokemonClient {
    easily accessible through a modern RESTful API.
    */
   static var live: Self {
-    .init(fetchPokemon: {
-      AsyncStream { continuation in
-        Task {
-          let response = try await JSONDecoder().decode(
-            Response.self,
-            from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!).0
-          )
-          
-          for url in response.results.map(\.url) {
-            let pokemonDetail = try await JSONDecoder().decode(
-              PokemonDetails.self,
-              from: URLSession.shared.data(from: url).0
-            )
-            let pokemon = Pokemon(
-              id: UUID(),
-              name: pokemonDetail.name,
-              imageURL: pokemonDetail.sprites.front_default
-            )
-            continuation.yield(pokemon)
+    .init(
+      fetchPokemon: {
+        AsyncStream { continuation in
+          Task {
+            let urls = try await JSONDecoder().decode(
+              Response.self,
+              from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!).0
+            ).results.map(\.url)
+            
+            for url in urls {
+              let pokemonDetail = try await JSONDecoder().decode(
+                PokemonDetails.self,
+                from: URLSession.shared.data(from: url).0
+              )
+              let pokemon = Pokemon(
+                id: UUID(),
+                name: pokemonDetail.name,
+                imageURL: pokemonDetail.sprites.front_default
+              )
+              continuation.yield(pokemon)
+            }
+            continuation.finish()
+          }
+        }
+      },
+      fetchPokemonConcurrently: {
+        AsyncStream { continuation in
+          Task {
+            let urls = try await JSONDecoder().decode(
+              Response.self,
+              from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!).0
+            ).results.map(\.url)
+                        
+            await withThrowingTaskGroup(of: Void.self) { group in
+              for url in urls {
+                group.addTask {
+                  let pokemonDetail = try await JSONDecoder().decode(
+                    PokemonDetails.self,
+                    from: URLSession.shared.data(from: url).0
+                  )
+                  let pokemon = Pokemon(
+                    id: UUID(),
+                    name: pokemonDetail.name,
+                    imageURL: pokemonDetail.sprites.front_default
+                  )
+                  continuation.yield(pokemon)
+                }
+              }
+            }
+            
+            continuation.finish()
           }
         }
       }
-    })
+    )
   }
 }
 
 // MARK: - Private
 
-private extension PokemonClient { 
+private extension PokemonClient {
   struct Response: Codable {
     let results: [EachResult]
     
