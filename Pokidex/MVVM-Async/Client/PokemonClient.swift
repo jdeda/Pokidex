@@ -1,9 +1,9 @@
 import Foundation
-import Combine
 
-struct PokemonClientCombine {
-  var fetchPokemon: AnyPublisher<Pokemon, Never>
-
+struct PokemonClient {
+  var fetchPokemon: @Sendable () -> AsyncStream<Pokemon>
+  var fetchPokemonConcurrently: @Sendable () -> AsyncStream<Pokemon>
+  
   struct Pokemon: Identifiable, Codable {
     let id: UUID
     let name: String
@@ -11,7 +11,7 @@ struct PokemonClientCombine {
   }
 }
 
-extension PokemonClientCombine {
+extension PokemonClient {
   static var liveValue = Self.live
   static var previewValue = Self.preview
 }

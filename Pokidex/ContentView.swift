@@ -1,67 +1,57 @@
 import SwiftUI
-import Combine
-
-class ViewModel: ObservableObject {
-  @Published var pokemon = [PokemonClient.Pokemon]()
-  var pokemonClient: PokemonClient
-  
-  init(pokemonClient: PokemonClient) {
-    self.pokemonClient = pokemonClient
-  }
-  
-  @MainActor
-  func onAppear() async  {
-    for await pokemon in pokemonClient.fetchPokemon() {
-      self.pokemon.append(pokemon)
-    }
-  }
-}
 
 struct ContentView: View {
-  @ObservedObject var viewModel: ViewModel
-  
   var body: some View {
     NavigationView {
-      List {
-        ForEach(viewModel.pokemon) { pokemon in
-          PokemonView(pokemon: pokemon)
+        Form {
+          ForEach(ContentChoice.allCases, id: \.self) { choice in
+            NavigationLink {
+              switch choice {
+              case .MVVMCombine:
+                ContentViewMVVMCombine(viewModel: .init(pokemonClient: .live))
+                  .navigationTitle("Pokemon")
+              case .MVVMAsync:
+                ContentViewMVVMAsync(viewModel: .init(pokemonClient: .live))
+                  .navigationTitle("Pokemon")
+              case .TCA:
+                ContentViewMVVMAsync(viewModel: .init(pokemonClient: .live))
+                  .navigationTitle("Pokemon")
+              }
+            } label: {
+              HStack {
+                Image(systemName: "bolt.fill")
+                Text("\(choice.string)")
+              }
+              .padding()
+            }
+          }
         }
-      }
-      .listStyle(.plain)
-      .navigationTitle("Pokemon")
+      .navigationBarTitle("Implementation")
     }
-    .onAppear {
-      Task {
-        await viewModel.onAppear()
-      }
-    }
-  }
-}
-
-struct PokemonView: View {
-  let pokemon: PokemonClient.Pokemon
-  
-  var body: some View {
-    HStack {
-      AsyncImage(url: pokemon.imageURL) { image in
-        image
-          .resizable()
-          .scaledToFit()
-      } placeholder: {
-        ProgressView()
-      }
-      .frame(width: 50, height: 50)
-      .background(Color(.systemGray6))
-      .clipShape(Circle())
-      
-      Text(pokemon.name.capitalized)
-    }
-    .frame(maxWidth: .infinity, alignment: .leading)
   }
 }
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView(viewModel: .init(pokemonClient: .previewValue))
+    ContentView()
+  }
+}
+
+enum ContentChoice: CaseIterable {
+  case MVVMCombine
+  case MVVMAsync
+  case TCA
+}
+
+extension ContentChoice {
+  var string: String {
+    switch self {
+    case .MVVMCombine:
+      return "MVVM Combine"
+    case .MVVMAsync:
+      return "MVVM Async"
+    case .TCA:
+      return "TCA"
+    }
   }
 }
