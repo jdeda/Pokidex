@@ -22,12 +22,12 @@ class ViewModel: ObservableObject {
   }
   
   @MainActor
-  func onAppearConcurrently() async  {
+  func onAppearParallel() async  {
     let start = Date()
     defer {
       debugPrint("onAppearConcurrently", "finished in", Date().timeIntervalSince(start))
     }
-    for await pokemon in pokemonClient.fetchPokemonConcurrently() {
+    for await pokemon in pokemonClient.fetchPokemonParallel() {
       self.pokemon.append(pokemon)
     }
   }
@@ -44,13 +44,11 @@ struct ContentViewMVVMAsync: View {
     .toolbar {
       ToolbarItemGroup.init(placement: .navigationBarTrailing) {
           Button {
-            
           } label: {
             Image(systemName: "clock.arrow.circlepath")
               .help("Fetch serially")
           }
           Button {
-
           } label: {
             Image(systemName: "clock.arrow.2.circlepath")
               .help("Fetch parallelly")
@@ -58,7 +56,7 @@ struct ContentViewMVVMAsync: View {
       }
     }
     .onAppear { Task {
-      await viewModel.onAppearConcurrently()
+      await viewModel.onAppearParallel()
     }}
   }
 }

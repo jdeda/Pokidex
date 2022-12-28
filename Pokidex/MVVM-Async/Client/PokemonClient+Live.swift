@@ -35,7 +35,7 @@ extension PokemonClient {
           }
         }
       },
-      fetchPokemonConcurrently: {
+      fetchPokemonParallel: {
         AsyncStream { continuation in
           Task {
             let urls = try await JSONDecoder().decode(

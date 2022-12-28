@@ -14,22 +14,26 @@ class ViewModelCombine: ObservableObject {
     let start = Date()
     self.pokemonClient.fetchPokemon
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { completion in
-        debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
-      }, receiveValue: { pokemon in
-        self.pokemon.append(pokemon)
-      })
+      .sink(
+        receiveCompletion: { completion in
+          debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
+        },
+        receiveValue: { pokemon in
+          self.pokemon.append(pokemon)
+        })
       .store(in: &cancellables)
   }
-  func onAppearConcurrently()  {
+  func onAppearParallel()  {
     let start = Date()
-    self.pokemonClient.fetchPokemonConcurrently
+    self.pokemonClient.fetchPokemonParallel
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { completion in
-        debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
-      }, receiveValue: { pokemon in
-        self.pokemon.append(pokemon)
-      })
+      .sink(
+        receiveCompletion: { completion in
+          debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
+        },
+        receiveValue: { pokemon in
+          self.pokemon.append(pokemon)
+        })
       .store(in: &cancellables)
   }
 }
@@ -45,22 +49,22 @@ struct ContentViewMVVMCombine: View {
     .listStyle(.plain)
     .toolbar {
       ToolbarItemGroup.init(placement: .navigationBarTrailing) {
-          Button {
-            
-          } label: {
-            Image(systemName: "clock.arrow.circlepath")
-              .help("Fetch serially")
-          }
-          Button {
-
-          } label: {
-            Image(systemName: "clock.arrow.2.circlepath")
-              .help("Fetch parallelly")
-          }
+        Button {
+          
+        } label: {
+          Image(systemName: "clock.arrow.circlepath")
+            .help("Fetch serially")
+        }
+        Button {
+          
+        } label: {
+          Image(systemName: "clock.arrow.2.circlepath")
+            .help("Fetch parallelly")
+        }
       }
     }
     .onAppear {
-      viewModel.onAppearConcurrently()
+      viewModel.onAppearParallel()
     }
   }
 }

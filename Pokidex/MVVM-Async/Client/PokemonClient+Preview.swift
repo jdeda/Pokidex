@@ -13,7 +13,7 @@ extension PokemonClient {
           }
         }
       },
-      fetchPokemonConcurrently: {
+      fetchPokemonParallel: {
         AsyncStream { continuation in
           Task {
             for model in models {

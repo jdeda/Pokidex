@@ -33,7 +33,7 @@ extension PokemonClientCombine {
       
       return publisher
     }(),
-    fetchPokemonConcurrently: {
+    fetchPokemonParallel: {
       let models: [Pokemon] = [
         .init(
           id: UUID(),
