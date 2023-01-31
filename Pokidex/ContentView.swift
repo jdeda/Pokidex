@@ -1,30 +1,51 @@
 import SwiftUI
+import SwiftUINavigation
 
+final class ContentViewModel: ObservableObject {
+  @Published var destination: Destination? = nil
+  
+  func rowTapped(_ choice: ContentChoice) {
+    switch choice {
+    case .MVVMCombine:
+      destination = .combine(.init(pokemonClient: .live))
+    case .MVVMAsync:
+      destination = .async(.init(pokemonClient: .live))
+    }
+  }
+  
+  enum Destination {
+    case combine(ViewModelCombine)
+    case async(ViewModelAsync)
+  }
+}
 struct ContentView: View {
+  @ObservedObject var viewModel: ContentViewModel = .init()
   var body: some View {
-    NavigationView {
+    NavigationStack {
         Form {
           ForEach(ContentChoice.allCases, id: \.self) { choice in
-            NavigationLink {
-              switch choice {
-              case .MVVMCombine:
-                ContentViewMVVMCombine(viewModel: .init(pokemonClient: .live))
-                  .navigationTitle("Pokemon")
-              case .MVVMAsync:
-                ContentViewMVVMAsync(viewModel: .init(pokemonClient: .live))
-                  .navigationTitle("Pokemon")
-              case .TCA:
-                ContentViewMVVMAsync(viewModel: .init(pokemonClient: .live))
-                  .navigationTitle("Pokemon")
-              }
+            Button {
+              viewModel.rowTapped(choice)
             } label: {
               HStack {
                 Image(systemName: "bolt.fill")
                 Text("\(choice.string)")
               }
-              .padding()
             }
+            .padding()
           }
+        }
+        .navigationDestination(
+          unwrapping: $viewModel.destination,
+          case: /ContentViewModel.Destination.combine
+        ) { $combineViewModel in
+          ContentViewMVVMCombine(viewModel: combineViewModel)
+        }
+        .navigationDestination(
+          unwrapping: $viewModel.destination,
+          case: /ContentViewModel.Destination.async
+        ) { $asyncViewModel in
+          ContentViewMVVMAsync(viewModel: asyncViewModel)
         }
       .navigationBarTitle("Implementation")
     }
@@ -40,7 +61,6 @@ struct ContentView_Previews: PreviewProvider {
 enum ContentChoice: CaseIterable {
   case MVVMCombine
   case MVVMAsync
-  case TCA
 }
 
 extension ContentChoice {
@@ -50,8 +70,6 @@ extension ContentChoice {
       return "MVVM Combine"
     case .MVVMAsync:
       return "MVVM Async"
-    case .TCA:
-      return "TCA"
     }
   }
 }

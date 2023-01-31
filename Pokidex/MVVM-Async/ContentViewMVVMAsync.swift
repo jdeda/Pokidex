@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-class ViewModel: ObservableObject {
+class ViewModelAsync: ObservableObject {
   @Published var pokemon = [PokemonClient.Pokemon]()
   var pokemonClient: PokemonClient
   
@@ -34,7 +34,7 @@ class ViewModel: ObservableObject {
 }
 
 struct ContentViewMVVMAsync: View {
-  @ObservedObject var viewModel: ViewModel
+  @ObservedObject var viewModel: ViewModelAsync
   
   var body: some View {
     List {

@@ -21,6 +21,7 @@ class ViewModelCombine: ObservableObject {
       })
       .store(in: &cancellables)
   }
+  
   func onAppearConcurrently()  {
     let start = Date()
     self.pokemonClient.fetchPokemonConcurrently
