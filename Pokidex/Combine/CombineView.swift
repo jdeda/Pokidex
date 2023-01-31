@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 
+// MARK: - ViewModel
 final class CombineViewModel: ObservableObject {
   @Published var pokemon = [PokemonClientCombine.Pokemon]()
   var pokemonClient: PokemonClientCombine = .live
@@ -35,13 +36,13 @@ final class CombineViewModel: ObservableObject {
   }
 }
 
-
+// MARK: - View
 struct CombineView: View {
   @ObservedObject var viewModel: CombineViewModel
   
   var body: some View {
     List {
-      ForEach(viewModel.pokemon, content: PokemonViewCombine.init)
+      ForEach(viewModel.pokemon, content: PokemonView.init)
     }
     .listStyle(.plain)
     .toolbar {
@@ -66,7 +67,8 @@ struct CombineView: View {
   }
 }
 
-struct PokemonViewCombine: View {
+// MARK: - Helper Views
+fileprivate struct PokemonView: View {
   let pokemon: PokemonClientCombine.Pokemon
   
   var body: some View {
@@ -88,6 +90,7 @@ struct PokemonViewCombine: View {
   }
 }
 
+// MARK: - Previews
 struct CombineView_Previews: PreviewProvider {
   static var previews: some View {
     CombineView(viewModel: .init(pokemonClient: .preview))

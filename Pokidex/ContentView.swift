@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftUINavigation
 
+// MARK: - ViewModel
 final class ContentViewModel: ObservableObject {
   @Published var destination: Destination? = nil
   
@@ -18,6 +19,8 @@ final class ContentViewModel: ObservableObject {
     case async(AsyncViewModel)
   }
 }
+
+// MARK: - View
 struct ContentView: View {
   @ObservedObject var viewModel: ContentViewModel = .init()
   var body: some View {
@@ -54,6 +57,7 @@ struct ContentView: View {
   }
 }
 
+// MARK: - Previews
 enum ContentChoice: CaseIterable {
   case MVVMCombine
   case MVVMAsync
@@ -68,6 +72,7 @@ enum ContentChoice: CaseIterable {
   }
 }
 
+// MARK: - Previews
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
     ContentView()
