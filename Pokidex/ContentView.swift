@@ -14,8 +14,8 @@ final class ContentViewModel: ObservableObject {
   }
   
   enum Destination {
-    case combine(ViewModelCombine)
-    case async(ViewModelAsync)
+    case combine(CombineViewModel)
+    case async(AsyncViewModel)
   }
 }
 struct ContentView: View {
@@ -39,31 +39,25 @@ struct ContentView: View {
           unwrapping: $viewModel.destination,
           case: /ContentViewModel.Destination.combine
         ) { $combineViewModel in
-          ContentViewMVVMCombine(viewModel: combineViewModel)
+          CombineView(viewModel: combineViewModel)
+            .navigationTitle(ContentChoice.MVVMCombine.string)
         }
         .navigationDestination(
           unwrapping: $viewModel.destination,
           case: /ContentViewModel.Destination.async
         ) { $asyncViewModel in
-          ContentViewMVVMAsync(viewModel: asyncViewModel)
+          AsyncView(viewModel: asyncViewModel)
+            .navigationTitle(ContentChoice.MVVMAsync.string)
         }
       .navigationBarTitle("Implementation")
     }
   }
 }
 
-struct ContentView_Previews: PreviewProvider {
-  static var previews: some View {
-    ContentView()
-  }
-}
-
 enum ContentChoice: CaseIterable {
   case MVVMCombine
   case MVVMAsync
-}
-
-extension ContentChoice {
+  
   var string: String {
     switch self {
     case .MVVMCombine:
@@ -71,5 +65,11 @@ extension ContentChoice {
     case .MVVMAsync:
       return "MVVM Async"
     }
+  }
+}
+
+struct ContentView_Previews: PreviewProvider {
+  static var previews: some View {
+    ContentView()
   }
 }

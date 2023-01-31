@@ -66,7 +66,6 @@ extension PokemonClientCombine {
 }
 
 // MARK: - Private
-
 private extension PokemonClientCombine {
   struct Response: Codable {
     let results: [EachResult]

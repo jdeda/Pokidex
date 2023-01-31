@@ -1,6 +1,6 @@
 import Foundation
 
-extension PokemonClient {
+extension PokemonClientAsync {
   
   /**
    This version connects to the pokeAPI:
@@ -70,7 +70,7 @@ extension PokemonClient {
 
 // MARK: - Private
 
-private extension PokemonClient {
+private extension PokemonClientAsync {
   struct Response: Codable {
     let results: [EachResult]
     

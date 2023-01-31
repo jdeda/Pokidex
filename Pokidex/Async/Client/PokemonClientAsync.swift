@@ -1,6 +1,6 @@
 import Foundation
 
-struct PokemonClient {
+struct PokemonClientAsync {
   var fetchPokemon: @Sendable () -> AsyncStream<Pokemon>
   var fetchPokemonConcurrently: @Sendable () -> AsyncStream<Pokemon>
   
@@ -11,7 +11,7 @@ struct PokemonClient {
   }
 }
 
-extension PokemonClient {
+extension PokemonClientAsync {
   static var liveValue = Self.live
   static var previewValue = Self.preview
 }

@@ -1,11 +1,11 @@
 import SwiftUI
 import Combine
 
-class ViewModelAsync: ObservableObject {
-  @Published var pokemon = [PokemonClient.Pokemon]()
-  var pokemonClient: PokemonClient
+final class AsyncViewModel: ObservableObject {
+  @Published var pokemon = [PokemonClientAsync.Pokemon]()
+  var pokemonClient: PokemonClientAsync
   
-  init(pokemonClient: PokemonClient) {
+  init(pokemonClient: PokemonClientAsync) {
     self.pokemonClient = pokemonClient
   }
   
@@ -33,8 +33,8 @@ class ViewModelAsync: ObservableObject {
   }
 }
 
-struct ContentViewMVVMAsync: View {
-  @ObservedObject var viewModel: ViewModelAsync
+struct AsyncView: View {
+  @ObservedObject var viewModel: AsyncViewModel
   
   var body: some View {
     List {
@@ -64,7 +64,7 @@ struct ContentViewMVVMAsync: View {
 }
 
 struct PokemonView: View {
-  let pokemon: PokemonClient.Pokemon
+  let pokemon: PokemonClientAsync.Pokemon
   
   var body: some View {
     HStack {
@@ -87,6 +87,6 @@ struct PokemonView: View {
 
 struct ContentViewMVVMAsync_Previews: PreviewProvider {
   static var previews: some View {
-    ContentViewMVVMAsync(viewModel: .init(pokemonClient: .previewValue))
+    AsyncView(viewModel: .init(pokemonClient: .previewValue))
   }
 }

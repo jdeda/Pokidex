@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-class ViewModelCombine: ObservableObject {
+final class CombineViewModel: ObservableObject {
   @Published var pokemon = [PokemonClientCombine.Pokemon]()
   var pokemonClient: PokemonClientCombine = .live
   var cancellables = Set<AnyCancellable>()
@@ -36,8 +36,8 @@ class ViewModelCombine: ObservableObject {
 }
 
 
-struct ContentViewMVVMCombine: View {
-  @ObservedObject var viewModel: ViewModelCombine
+struct CombineView: View {
+  @ObservedObject var viewModel: CombineViewModel
   
   var body: some View {
     List {
@@ -88,8 +88,8 @@ struct PokemonViewCombine: View {
   }
 }
 
-struct ContentViewMVVMCombine_Previews: PreviewProvider {
+struct CombineView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentViewMVVMCombine(viewModel: .init(pokemonClient: .preview))
+    CombineView(viewModel: .init(pokemonClient: .preview))
   }
 }

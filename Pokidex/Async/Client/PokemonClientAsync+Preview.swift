@@ -1,6 +1,6 @@
 import Foundation
 
-extension PokemonClient {
+extension PokemonClientAsync {
   static var preview: Self {
     .init(
       fetchPokemon: {
@@ -29,7 +29,7 @@ extension PokemonClient {
 
 // MARK: - Private
 
-private let models: [PokemonClient.Pokemon] = [
+private let models: [PokemonClientAsync.Pokemon] = [
   .init(
     id: UUID(),
     name: "bulbasaur",
