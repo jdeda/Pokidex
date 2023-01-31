@@ -3,7 +3,7 @@ import Combine
 
 extension PokemonClientCombine {
   static var preview = Self.init(
-    fetchPokemon: {
+    fetchPokemonSerial: {
       let models: [Pokemon] = [
         .init(
           id: UUID(),
@@ -33,7 +33,8 @@ extension PokemonClientCombine {
       
       return publisher
     }(),
-    fetchPokemonConcurrently: {
+    
+    fetchPokemonParallel: {
       let models: [Pokemon] = [
         .init(
           id: UUID(),

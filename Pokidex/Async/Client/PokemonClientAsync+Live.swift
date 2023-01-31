@@ -11,7 +11,7 @@ extension PokemonClientAsync {
    */
   static var live: Self {
     .init(
-      fetchPokemon: {
+      fetchPokemonSerial: {
         AsyncStream { continuation in
           Task {
             let urls = try await JSONDecoder().decode(
@@ -35,7 +35,7 @@ extension PokemonClientAsync {
           }
         }
       },
-      fetchPokemonConcurrently: {
+      fetchPokemonParallel: {
         AsyncStream { continuation in
           Task {
             let urls = try await JSONDecoder().decode(

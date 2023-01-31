@@ -3,7 +3,7 @@ import Combine
 
 extension PokemonClientCombine {
   static var live = Self.init(
-    fetchPokemon: {
+    fetchPokemonSerial: {
       let publisher = URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!)
         .map { data, response -> [URL] in
           guard
@@ -36,7 +36,8 @@ extension PokemonClientCombine {
         .eraseToAnyPublisher()
       return publisher
     }(),
-    fetchPokemonConcurrently: {
+    
+    fetchPokemonParallel: {
       let publisher = URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!)
         .map { data, response -> [URL] in
           guard

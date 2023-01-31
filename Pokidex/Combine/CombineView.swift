@@ -13,7 +13,7 @@ final class CombineViewModel: ObservableObject {
   
   func onAppear()  {
     let start = Date()
-    self.pokemonClient.fetchPokemon
+    self.pokemonClient.fetchPokemonSerial
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { completion in
         debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
@@ -23,9 +23,9 @@ final class CombineViewModel: ObservableObject {
       .store(in: &cancellables)
   }
   
-  func onAppearConcurrently()  {
+  func onAppearParallel()  {
     let start = Date()
-    self.pokemonClient.fetchPokemonConcurrently
+    self.pokemonClient.fetchPokemonParallel
       .receive(on: DispatchQueue.main)
       .sink(receiveCompletion: { completion in
         debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
@@ -62,7 +62,7 @@ struct CombineView: View {
       }
     }
     .onAppear {
-      viewModel.onAppearConcurrently()
+      viewModel.onAppearParallel()
     }
   }
 }

@@ -3,7 +3,7 @@ import Foundation
 extension PokemonClientAsync {
   static var preview: Self {
     .init(
-      fetchPokemon: {
+      fetchPokemonSerial: {
         AsyncStream { continuation in
           Task {
             for model in models {
@@ -13,7 +13,7 @@ extension PokemonClientAsync {
           }
         }
       },
-      fetchPokemonConcurrently: {
+      fetchPokemonParallel: {
         AsyncStream { continuation in
           Task {
             for model in models {

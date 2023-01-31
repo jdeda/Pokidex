@@ -16,19 +16,19 @@ final class AsyncViewModel: ObservableObject {
     defer {
       debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
     }
-    for await pokemon in pokemonClient.fetchPokemon() {
+    for await pokemon in pokemonClient.fetchPokemonSerial() {
       debugPrint("onAppear", "finished in", pokemon)
       self.pokemon.append(pokemon)
     }
   }
   
   @MainActor
-  func onAppearConcurrently() async  {
+  func onAppearParallel() async  {
     let start = Date()
     defer {
       debugPrint("onAppearConcurrently", "finished in", Date().timeIntervalSince(start))
     }
-    for await pokemon in pokemonClient.fetchPokemonConcurrently() {
+    for await pokemon in pokemonClient.fetchPokemonParallel() {
       self.pokemon.append(pokemon)
     }
   }
@@ -59,9 +59,9 @@ struct AsyncView: View {
           }
       }
     }
-    .onAppear { Task {
-      await viewModel.onAppearConcurrently()
-    }}
+    .task {
+      await viewModel.onAppearParallel()
+    }
   }
 }
 
