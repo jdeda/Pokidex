@@ -1,53 +1,5 @@
 import SwiftUI
-import SwiftUINavigation
-
-// MARK: - ViewModel
-final class AsyncViewModel: ObservableObject {
-  @Published var pokemon = [PokemonClientAsync.Pokemon]()
-  let pokemonClient: PokemonClientAsync
-  @Published var fetchMessage: String
-  
-  init(pokemonClient: PokemonClientAsync) {
-    self.pokemonClient = pokemonClient
-    fetchMessage = ""
-  }
-  
-  @MainActor
-  func onAppear() async  {
-    let start = Date()
-    defer {
-      self.fetchMessage = "fetched \(self.pokemon.count) pokemon in \(start.elapsedTime)"
-    }
-    for await pokemon in pokemonClient.fetchPokemonSerial() {
-      self.pokemon.append(pokemon)
-      self.fetchMessage = "fetched \(self.pokemon.count) pokemon"
-    }
-  }
-  
-  @MainActor
-  func onAppearParallel() async  {
-    let start = Date()
-    defer {
-      self.fetchMessage = "fetched \(self.pokemon.count) pokemon in \(start.elapsedTime)"
-    }
-    for await pokemon in pokemonClient.fetchPokemonParallel() {
-      self.pokemon.append(pokemon)
-      self.fetchMessage = "fetched \(self.pokemon.count) pokemon"
-    }
-  }
-  
-  @MainActor
-  func fetchSerialButtonTapped() async {
-    pokemon = []
-    await onAppear()
-  }
-  
-  @MainActor
-  func fetchParallelButtonTapped() async {
-    pokemon = []
-    await onAppearParallel()
-  }
-}
+import Combine
 
 // MARK: - View
 struct AsyncView: View {
@@ -60,27 +12,32 @@ struct AsyncView: View {
     .listStyle(.plain)
     .toolbar {
       ToolbarItemGroup.init(placement: .navigationBarTrailing) {
-          Button {
-//            await viewModel.fetchSerialButtonTapped()
-          } label: {
-            Image(systemName: "clock.arrow.circlepath")
-              .help("Fetch serially")
-          }
-          Button {
-//            await viewModel.fetchParallelButtonTapped()
-          } label: {
-            Image(systemName: "clock.arrow.2.circlepath")
-              .help("Fetch parallelly")
-          }
+        Button {
+          Task { await viewModel.fetchSerialButtonTapped() }
+        } label: {
+          Image(systemName: "clock.arrow.circlepath")
+            .help("Fetch serially")
+        }
+        Button {
+          Task { await viewModel.fetchParallelButtonTapped() }
+        } label: {
+          Image(systemName: "clock.arrow.2.circlepath")
+            .help("Fetch parallelly")
+        }
+        Button {
+          viewModel.resetButtonTapped()
+        } label: {
+          Image(systemName: "xmark.circle")
+            .help("Reset data")
+        }
       }
       ToolbarItemGroup.init(placement: .bottomBar) {
         Text(viewModel.fetchMessage)
           .font(.caption)
       }
     }
-    .task {
-      await viewModel.onAppearParallel()
-    }
+    .task { await viewModel.onAppear() }
+    .onDisappear { viewModel.onDisappear() }
   }
 }
 
@@ -110,6 +67,6 @@ fileprivate struct PokemonView: View {
 // MARK: - Previews
 struct AsyncView_Previews: PreviewProvider {
   static var previews: some View {
-    AsyncView(viewModel: .init(pokemonClient: .previewValue))
+    AsyncView(viewModel: .init(pokemonClient: .preview))
   }
 }

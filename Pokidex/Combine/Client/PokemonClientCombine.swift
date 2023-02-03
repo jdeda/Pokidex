@@ -9,6 +9,7 @@ struct PokemonClientCombine {
     let id: UUID
     let name: String
     let imageURL: URL
+    let url: URL
   }
 }
 

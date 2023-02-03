@@ -3,11 +3,7 @@ import SwiftUINavigation
 
 // MARK: - ViewModel
 final class ContentViewModel: ObservableObject {
-  @Published var destination: Destination? = nil {
-    didSet {
-      NSLog("destination didSet: \(destination)")
-    }
-  }
+  @Published var destination: Destination? = nil
   
   func rowTapped(_ choice: ContentChoice) {
     switch choice {
@@ -29,33 +25,31 @@ struct ContentView: View {
   @ObservedObject var viewModel: ContentViewModel = .init()
   var body: some View {
     NavigationStack {
-        Form {
-          ForEach(ContentChoice.allCases, id: \.self) { choice in
-            Button {
-              viewModel.rowTapped(choice)
-            } label: {
-              HStack {
-                Image(systemName: "bolt.fill")
-                Text("\(choice.string)")
-              }
+      Form {
+        ForEach(ContentChoice.allCases, id: \.self) { choice in
+          Button { viewModel.rowTapped(choice) } label: {
+            HStack {
+              Image(systemName: "bolt.fill")
+              Text("\(choice.string)")
             }
-            .padding()
           }
+          .padding(5)
         }
-        .navigationDestination(
-          unwrapping: $viewModel.destination, // This would be set to nil so the ref would have no pointers thus released
-          case: /ContentViewModel.Destination.combine
-        ) { $combineViewModel in
-          CombineView(viewModel: combineViewModel)
-            .navigationTitle(ContentChoice.MVVMCombine.string)
-        }
-        .navigationDestination(
-          unwrapping: $viewModel.destination,
-          case: /ContentViewModel.Destination.async
-        ) { $asyncViewModel in
-          AsyncView(viewModel: asyncViewModel)
-            .navigationTitle(ContentChoice.MVVMAsync.string)
-        }
+      }
+      .navigationDestination(
+        unwrapping: $viewModel.destination,
+        case: /ContentViewModel.Destination.combine
+      ) { $combineViewModel in
+        CombineView(viewModel: combineViewModel)
+          .navigationTitle(ContentChoice.MVVMCombine.string)
+      }
+      .navigationDestination(
+        unwrapping: $viewModel.destination,
+        case: /ContentViewModel.Destination.async
+      ) { $asyncViewModel in
+        AsyncView(viewModel: asyncViewModel)
+          .navigationTitle(ContentChoice.MVVMAsync.string)
+      }
       .navigationBarTitle("Implementation")
     }
   }

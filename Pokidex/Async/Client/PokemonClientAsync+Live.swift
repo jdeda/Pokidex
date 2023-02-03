@@ -14,6 +14,7 @@ extension PokemonClientAsync {
       fetchPokemonSerial: {
         AsyncStream<Pokemon> { continuation in
           let task = Task {
+            NSLog("PokemonClientAsync.fetchPokemonSerial begin")
             let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!
             guard let data = try? await URLSession.shared.data(from: url),
                   let response = try? JSONDecoder().decode(Response.self, from: data.0)
@@ -22,28 +23,27 @@ extension PokemonClientAsync {
             for url in response.results.map(\.url) {
               guard !Task.isCancelled
               else {
-                debugPrint("fetchPokemonSerial", "cancelled url", url)
+                NSLog("PokemonClientAsync.fetchPokemonSerial cancel")
                 break
               }
               guard let pokemonDetail = try? await JSONDecoder().decode(
                 PokemonDetails.self,
                 from: URLSession.shared.data(from: url).0
               )
-              else {
-                debugPrint("fetchPokemonSerial", "failed url", url)
-                continue
-              }
+              else { continue }
               let pokemon = Pokemon(
                 id: UUID(),
                 name: pokemonDetail.name,
-                imageURL: pokemonDetail.sprites.front_default
+                imageURL: pokemonDetail.sprites.front_default,
+                url: url
               )
+              NSLog("PokemonClientAsync.fetchPokemonSerial fetching: \(url)")
               continuation.yield(pokemon)
             }
             continuation.finish()
           }
           continuation.onTermination = { _ in
-            NSLog("terminate fetchPokemonSerial")
+            NSLog("PokemonClientAsync.fetchPokemonSerial terminate")
             task.cancel()
           }
         }
@@ -52,6 +52,7 @@ extension PokemonClientAsync {
       fetchPokemonParallel: {
         AsyncStream { continuation in
           let task = Task {
+            NSLog("PokemonClientAsync.fetchPokemonParallel begin")
             let urls = try await JSONDecoder().decode(
               Response.self,
               from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!).0
@@ -67,8 +68,10 @@ extension PokemonClientAsync {
                   let pokemon = Pokemon(
                     id: UUID(),
                     name: pokemonDetail.name,
-                    imageURL: pokemonDetail.sprites.front_default
+                    imageURL: pokemonDetail.sprites.front_default,
+                    url: url
                   )
+                  NSLog("PokemonClientAsync.fetchPokemonParallel fetching: \(url)")
                   continuation.yield(pokemon)
                 }
               }
@@ -76,7 +79,7 @@ extension PokemonClientAsync {
             continuation.finish()
           }
           continuation.onTermination = { _ in
-            NSLog("terminate fetchPokemonParallel")
+            NSLog("PokemonClientAsync.fetchPokemonParallel terminate")
             task.cancel()
           }
         }

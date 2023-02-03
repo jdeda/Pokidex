@@ -27,24 +27,21 @@ extension PokemonClientCombine {
         }
         .replaceError(with: [])
         .flatMap(\.publisher)
-        .map {
-          NSLog("PokemonClient.fetchPokemonSerial fetching: \($0)")
-          return $0
-        }
         .flatMap(maxPublishers: .max(1), URLSession.shared.dataTaskPublisher(for:))
         .compactMap { data, response -> Pokemon? in
           guard
             let responseHTTP = response as? HTTPURLResponse,
-            responseHTTP.statusCode == 200
+            responseHTTP.statusCode == 200,
+            let url = response.url
           else { return nil }
           do {
             let pd = try JSONDecoder().decode(PokemonDetails.self, from: data)
-            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default)
+            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default, url: url)
           } catch {
             return nil
           }
         }
-        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!))
+        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!, url: URL(string: "foo")!))
         .eraseToAnyPublisher()
     }(),
     fetchPokemonParallel: {
@@ -63,24 +60,21 @@ extension PokemonClientCombine {
         }
         .replaceError(with: [])
         .flatMap(\.publisher)
-        .map {
-          NSLog("PokemonClient.fetchPokemonSerial fetching: \($0)")
-          return $0
-        }
         .flatMap(URLSession.shared.dataTaskPublisher)
         .compactMap { data, response -> Pokemon? in
           guard
             let responseHTTP = response as? HTTPURLResponse,
-            responseHTTP.statusCode == 200
+            responseHTTP.statusCode == 200,
+            let url = response.url
           else { return nil }
           do {
             let pd = try JSONDecoder().decode(PokemonDetails.self, from: data)
-            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default)
+            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default, url: url)
           } catch {
             return nil
           }
         }
-        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!))
+        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!, url: URL(string: "foo")!))
         .eraseToAnyPublisher()
     }()
   )
