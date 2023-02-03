@@ -57,7 +57,6 @@ final class CombineViewModel: ObservableObject {
         },
         receiveCompletion: { _ in
           NSLog("PokemonClientCombine.fetchPokemonParallel terminate")
-
         },
         receiveCancel: {
           NSLog("PokemonClientCombine.fetchPokemonSerial cancel")
