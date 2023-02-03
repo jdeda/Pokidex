@@ -27,8 +27,7 @@ extension PokemonClientAsync {
   }
 }
 
-// MARK: - Private
-
+// MARK: - Data
 private let models: [PokemonClientAsync.Pokemon] = [
   .init(
     id: UUID(),

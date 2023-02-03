@@ -2,9 +2,17 @@ import Foundation
 import Combine
 
 extension PokemonClientCombine {
+  
+  /**
+   This version connects to the pokeAPI:
+   <https://pokeapi.co/>
+   
+   All the Pokémon data you'll ever need in one place,
+   easily accessible through a modern RESTful API.
+   */
   static var live = Self.init(
     fetchPokemonSerial: {
-      let publisher = URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!)
+      URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!)
         .map { data, response -> [URL] in
           guard
             let responseHTTP = response as? HTTPURLResponse,
@@ -19,7 +27,11 @@ extension PokemonClientCombine {
         }
         .replaceError(with: [])
         .flatMap(\.publisher)
-        .flatMap(maxPublishers: .max(1), { URLSession.shared.dataTaskPublisher(for: $0) })
+        .map {
+          NSLog("PokemonClient.fetchPokemonSerial fetching: \($0)")
+          return $0
+        }
+        .flatMap(maxPublishers: .max(1), URLSession.shared.dataTaskPublisher(for:))
         .compactMap { data, response -> Pokemon? in
           guard
             let responseHTTP = response as? HTTPURLResponse,
@@ -34,11 +46,9 @@ extension PokemonClientCombine {
         }
         .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!))
         .eraseToAnyPublisher()
-      return publisher
     }(),
-    
     fetchPokemonParallel: {
-      let publisher = URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!)
+      URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!)
         .map { data, response -> [URL] in
           guard
             let responseHTTP = response as? HTTPURLResponse,
@@ -53,6 +63,10 @@ extension PokemonClientCombine {
         }
         .replaceError(with: [])
         .flatMap(\.publisher)
+        .map {
+          NSLog("PokemonClient.fetchPokemonSerial fetching: \($0)")
+          return $0
+        }
         .flatMap(URLSession.shared.dataTaskPublisher)
         .compactMap { data, response -> Pokemon? in
           guard
@@ -68,12 +82,11 @@ extension PokemonClientCombine {
         }
         .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!))
         .eraseToAnyPublisher()
-      return publisher
-    }())
+    }()
+  )
 }
 
-// MARK: - Private
-
+// MARK: - JSON Parse Types
 private extension PokemonClientCombine {
   struct Response: Codable {
     let results: [EachResult]

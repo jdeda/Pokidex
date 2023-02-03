@@ -4,35 +4,74 @@ import Combine
 // MARK: - ViewModel
 final class CombineViewModel: ObservableObject {
   @Published var pokemon = [PokemonClientCombine.Pokemon]()
-  var pokemonClient: PokemonClientCombine = .live
+  @Published var fetchMessage: String
+  
+  let pokemonClient: PokemonClientCombine
   var cancellables = Set<AnyCancellable>()
   
   init(pokemonClient: PokemonClientCombine) {
     self.pokemonClient = pokemonClient
+    self.fetchMessage = "0 pokemon"
   }
   
-  func onAppear()  {
+  // Race conditions?
+  // circular reference
+  private func fetchSerial()  {
     let start = Date()
     self.pokemonClient.fetchPokemonSerial
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { completion in
-        debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
-      }, receiveValue: { pokemon in
+      .sink(receiveCompletion: { [weak self] completion in
+        guard let self else { return }
+        self.fetchMessage = "fetched \(self.pokemon.count) pokemon in \(start.elapsedTime)"
+      }, receiveValue: { [weak self] pokemon in
+        guard let self = self else { return }
         self.pokemon.append(pokemon)
+        self.fetchMessage = "\(self.pokemon.count) pokemon"
       })
       .store(in: &cancellables)
   }
   
-  func onAppearParallel()  {
+  private func fetchParallel()  {
     let start = Date()
     self.pokemonClient.fetchPokemonParallel
       .receive(on: DispatchQueue.main)
-      .sink(receiveCompletion: { completion in
-        debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
-      }, receiveValue: { pokemon in
+      .sink(receiveCompletion: { [weak self] completion in
+        guard let self else { return }
+        self.fetchMessage = "fetched \(self.pokemon.count) pokemon in \(start.elapsedTime)"
+      }, receiveValue: { [weak self] pokemon in
+        guard let self else { return }
         self.pokemon.append(pokemon)
+        self.fetchMessage = "\(self.pokemon.count) pokemon"
       })
       .store(in: &cancellables)
+  }
+  
+  func onAppear() {
+    fetchSerial()
+  }
+  
+  func fetchSerialButtonTapped() {
+    pokemon = []
+    fetchMessage = "0 pokemon"
+    cancellables.removeAll()
+    fetchSerial()
+  }
+  
+  func fetchParallelButtonTapped() {
+    pokemon = []
+    fetchMessage = "0 pokemon"
+    cancellables.removeAll()
+    fetchParallel()
+  }
+  
+  func resetButtonTapped() {
+    pokemon = []
+    fetchMessage = "0 pokemon"
+    cancellables.removeAll()
+  }
+  
+  func onDisappear() {
+    cancellables.removeAll()
   }
 }
 
@@ -47,23 +86,32 @@ struct CombineView: View {
     .listStyle(.plain)
     .toolbar {
       ToolbarItemGroup.init(placement: .navigationBarTrailing) {
-          Button {
-            
-          } label: {
-            Image(systemName: "clock.arrow.circlepath")
-              .help("Fetch serially")
-          }
-          Button {
-
-          } label: {
-            Image(systemName: "clock.arrow.2.circlepath")
-              .help("Fetch parallelly")
-          }
+        Button {
+          viewModel.fetchSerialButtonTapped()
+        } label: {
+          Image(systemName: "clock.arrow.circlepath")
+            .help("Fetch serially")
+        }
+        Button {
+          viewModel.fetchParallelButtonTapped()
+        } label: {
+          Image(systemName: "clock.arrow.2.circlepath")
+            .help("Fetch parallelly")
+        }
+        Button {
+          viewModel.resetButtonTapped()
+        } label: {
+          Image(systemName: "xmark.circle")
+            .help("Reset data")
+        }
+      }
+      ToolbarItemGroup.init(placement: .bottomBar) {
+        Text(viewModel.fetchMessage)
+          .font(.caption)
       }
     }
-    .onAppear {
-      viewModel.onAppearParallel()
-    }
+    .onAppear(perform: viewModel.onAppear)
+    .onDisappear(perform: viewModel.onDisappear)
   }
 }
 

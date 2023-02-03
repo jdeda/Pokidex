@@ -3,7 +3,11 @@ import SwiftUINavigation
 
 // MARK: - ViewModel
 final class ContentViewModel: ObservableObject {
-  @Published var destination: Destination? = nil
+  @Published var destination: Destination? = nil {
+    didSet {
+      NSLog("destination didSet: \(destination)")
+    }
+  }
   
   func rowTapped(_ choice: ContentChoice) {
     switch choice {
@@ -39,7 +43,7 @@ struct ContentView: View {
           }
         }
         .navigationDestination(
-          unwrapping: $viewModel.destination,
+          unwrapping: $viewModel.destination, // This would be set to nil so the ref would have no pointers thus released
           case: /ContentViewModel.Destination.combine
         ) { $combineViewModel in
           CombineView(viewModel: combineViewModel)
@@ -65,9 +69,9 @@ enum ContentChoice: CaseIterable {
   var string: String {
     switch self {
     case .MVVMCombine:
-      return "MVVM Combine"
+      return "Combine"
     case .MVVMAsync:
-      return "MVVM Async"
+      return "Async"
     }
   }
 }

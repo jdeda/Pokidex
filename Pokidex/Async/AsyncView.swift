@@ -1,24 +1,26 @@
 import SwiftUI
-import Combine
+import SwiftUINavigation
 
 // MARK: - ViewModel
 final class AsyncViewModel: ObservableObject {
   @Published var pokemon = [PokemonClientAsync.Pokemon]()
-  var pokemonClient: PokemonClientAsync
+  let pokemonClient: PokemonClientAsync
+  @Published var fetchMessage: String
   
   init(pokemonClient: PokemonClientAsync) {
     self.pokemonClient = pokemonClient
+    fetchMessage = ""
   }
   
   @MainActor
   func onAppear() async  {
     let start = Date()
     defer {
-      debugPrint("onAppear", "finished in", Date().timeIntervalSince(start))
+      self.fetchMessage = "fetched \(self.pokemon.count) pokemon in \(start.elapsedTime)"
     }
     for await pokemon in pokemonClient.fetchPokemonSerial() {
-      debugPrint("onAppear", "finished in", pokemon)
       self.pokemon.append(pokemon)
+      self.fetchMessage = "fetched \(self.pokemon.count) pokemon"
     }
   }
   
@@ -26,11 +28,24 @@ final class AsyncViewModel: ObservableObject {
   func onAppearParallel() async  {
     let start = Date()
     defer {
-      debugPrint("onAppearConcurrently", "finished in", Date().timeIntervalSince(start))
+      self.fetchMessage = "fetched \(self.pokemon.count) pokemon in \(start.elapsedTime)"
     }
     for await pokemon in pokemonClient.fetchPokemonParallel() {
       self.pokemon.append(pokemon)
+      self.fetchMessage = "fetched \(self.pokemon.count) pokemon"
     }
+  }
+  
+  @MainActor
+  func fetchSerialButtonTapped() async {
+    pokemon = []
+    await onAppear()
+  }
+  
+  @MainActor
+  func fetchParallelButtonTapped() async {
+    pokemon = []
+    await onAppearParallel()
   }
 }
 
@@ -46,17 +61,21 @@ struct AsyncView: View {
     .toolbar {
       ToolbarItemGroup.init(placement: .navigationBarTrailing) {
           Button {
-            
+//            await viewModel.fetchSerialButtonTapped()
           } label: {
             Image(systemName: "clock.arrow.circlepath")
               .help("Fetch serially")
           }
           Button {
-
+//            await viewModel.fetchParallelButtonTapped()
           } label: {
             Image(systemName: "clock.arrow.2.circlepath")
               .help("Fetch parallelly")
           }
+      }
+      ToolbarItemGroup.init(placement: .bottomBar) {
+        Text(viewModel.fetchMessage)
+          .font(.caption)
       }
     }
     .task {
