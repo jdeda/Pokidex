@@ -11,6 +11,7 @@ Pokidex is a simple native iOS app for demonstrating Swift 5.5's brand new struc
   - [JSON to Swift](#json-to-swift)
   - [Combine](#combine)
   - [Async](#async)
+  - [Live vs Preview](#live-vs-preview)
   - [More](#more)
 
 <hr>
@@ -274,6 +275,32 @@ AsyncStream { continuation in
 ```
 Remember that tasks require cooperative cancellation, thus when we fetched the work serially, we had to inject some logic to handle that, by using the `Task.isCancelled` property. Here, our work is done in a task group, which will automatically be cancelled if its parent is cancelled.
 
+<hr>
+
+## Live vs Previews
+When building features, previews are a must. Thus, it would be very convinient to have mock data that we don't have to get more so involved in to get our previews up and running. We can delegate our work work to fetch `Pokemon` by creating a client, with functions representing a serial fetch or a parallel fetch, and a live version and a preview version:
+```swift
+
+// The Combine Version:
+struct PokemonClient {
+  var fetchPokemonSerial: AnyPublisher<Pokemon, Never>
+  var fetchPokemonParallel: AnyPublisher<Pokemon, Never>
+  
+  static var liveValue = Self.live
+  static var previewValue = Self.preview
+}
+
+
+// The Combine Version:
+struct PokemonClient {
+  var fetchPokemonSerial: @Sendable () -> AsyncStream<Pokemon>
+  var fetchPokemonParallel: @Sendable () -> AsyncStream<Pokemon>
+  
+  static var liveValue = Self.live
+  static var previewValue = Self.preview
+}
+
+```
 <hr>
 
 ## More
