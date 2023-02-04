@@ -5,15 +5,17 @@
 ## Welcome to Pokidex!
 Pokidex is a simple native iOS app for demonstrating Swift 5.5's brand new structured concurrency. The app essentially displays a list of pokemon which is streamed into the system, fetching data serially or in-parallel. This feature is implemented in two ways, in Combine or Swift's new concurrency system. Both implementations use MVVM for state management. Pokemon data is fetched from the [PokeAPI](https://pokeapi.co/).
 
-### Table of Contents
-- [Pokidex](#pokidex)
+## Table of Contents
   - [Welcome to Pokidex!](#welcome-to-pokidex)
-    - [JSON to Swift](#json-to-swift)
+  - [Table of Contents](#table-of-contents)
+  - [JSON to Swift](#json-to-swift)
   - [Combine](#combine)
   - [Async](#async)
   - [More](#more)
 
-### JSON to Swift
+<hr>
+
+## JSON to Swift
 The very first step in getting our data is converting JSON into Swift types. We want our end result to look like this:
 ```swift
   struct Pokemon: Identifiable, Codable {
@@ -155,6 +157,8 @@ private extension PokemonClientCombine {
 }
 ```
 
+<hr>
+
 ## Combine
 We'd like to stream the data in two ways: serially and in-parallel. Using our defined types and the `URLSession.shared.dataTaskPublisher`, we can build a publisher to fetch our data:
 ```swift
@@ -199,6 +203,8 @@ to this:
 .flatMap(URLSession.shared.dataTaskPublisher(for:))
 ```
 This is pretty powerful stuff, and attests to the beauty of Combine's use of higher order functions. However, what are things like in the async world?
+
+<hr>
 
 ## Async
 To acheive streaming using Swift 5.5's concurrency tools, we can use `AsyncStream`. Starting with fetching serially:
@@ -267,6 +273,8 @@ AsyncStream { continuation in
 }
 ```
 Remember that tasks require cooperative cancellation, thus when we fetched the work serially, we had to inject some logic to handle that, by using the `Task.isCancelled` property. Here, our work is done in a task group, which will automatically be cancelled if its parent is cancelled.
+
+<hr>
 
 ## More
 There is so much that could be discussed with these `Combine` and Swift's 5.5 concurrency tools. This app just scratches the surfaces, but aims to implement and understand good practices for using both of these tools. Check out the app to see much more!
