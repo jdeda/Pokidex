@@ -121,20 +121,3 @@ private extension PokemonClientAsync {
     }
   }
 }
-
-/**
- RESPONSE:
- {
- "count": 1154,
- "next": "https://pokeapi.co/api/v2/pokemon?offset=100&limit=100",
- "previous": null,
- "results": [
- {
- "name": "bulbasaur",
- "url": "https://pokeapi.co/api/v2/pokemon/1/"
- },
- {
- "name": "ivysaur",
- "url": "https://pokeapi.co/api/v2/pokemon/2/"
- },
- */
