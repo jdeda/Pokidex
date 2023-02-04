@@ -22,14 +22,14 @@ struct AppView: View {
         case: /AppViewModel.Destination.combine
       ) { $combineViewModel in
         CombineView(viewModel: combineViewModel)
-          .navigationTitle(AppViewModel.ContentChoice.MVVMCombine.string)
+          .navigationTitle(AppViewModel.ContentChoice.combine.string)
       }
       .navigationDestination(
         unwrapping: $viewModel.destination,
         case: /AppViewModel.Destination.async
       ) { $asyncViewModel in
         AsyncView(viewModel: asyncViewModel)
-          .navigationTitle(AppViewModel.ContentChoice.MVVMAsync.string)
+          .navigationTitle(AppViewModel.ContentChoice.async.string)
       }
       .navigationBarTitle("Implementation")
     }

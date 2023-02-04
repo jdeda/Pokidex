@@ -6,27 +6,34 @@ final class AppViewModel: ObservableObject {
   
   func rowTapped(_ choice: ContentChoice) {
     switch choice {
-    case .MVVMCombine:
+    case .combine:
       destination = .combine(.init(pokemonClient: .live))
-    case .MVVMAsync:
+    case .async:
       destination = .async(.init(pokemonClient: .live))
     }
   }
-  
+}
+
+// MARK: - ViewModel.Destination
+extension AppViewModel {
   enum Destination {
     case combine(CombineViewModel)
     case async(AsyncViewModel)
+    
   }
-  
+}
+
+// MARK: - ViewModel.ContentChoice
+extension AppViewModel {
   enum ContentChoice: CaseIterable {
-    case MVVMCombine
-    case MVVMAsync
+    case combine
+    case async
     
     var string: String {
       switch self {
-      case .MVVMCombine:
+      case .combine:
         return "Combine"
-      case .MVVMAsync:
+      case .async:
         return "Async"
       }
     }
