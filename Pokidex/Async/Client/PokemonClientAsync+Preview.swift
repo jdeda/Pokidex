@@ -9,7 +9,7 @@ extension PokemonClientAsync {
             for model in models {
               guard !Task.isCancelled
               else { break }
-              try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
+              try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Simulate a fetch delay
               continuation.yield(model)
             }
             continuation.finish()
@@ -24,7 +24,7 @@ extension PokemonClientAsync {
           let task = Task {
             await withTaskGroup(of: Void.self) { group in
               for model in models {
-                try? await Task.sleep(nanoseconds: NSEC_PER_MSEC) // Add a delay, but a much faster
+                try? await Task.sleep(nanoseconds: NSEC_PER_MSEC) // Simulate a fetch delay, but faster (parallelized)
                 continuation.yield(model)
               }
               continuation.finish()
