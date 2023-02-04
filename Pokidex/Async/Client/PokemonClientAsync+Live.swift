@@ -1,6 +1,6 @@
 import Foundation
 
-extension PokemonClient {
+extension PokemonClientAsync {
   
   /**
    This version connects to the pokeAPI:
@@ -11,38 +11,53 @@ extension PokemonClient {
    */
   static var live: Self {
     .init(
-      fetchPokemon: {
-        AsyncStream { continuation in
-          Task {
-            let urls = try await JSONDecoder().decode(
-              Response.self,
-              from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!).0
-            ).results.map(\.url)
+      fetchPokemonSerial: {
+        AsyncStream<Pokemon> { continuation in
+          let task = Task {
+            NSLog("PokemonClientAsync.fetchPokemonSerial begin")
+            let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!
+            guard let data = try? await URLSession.shared.data(from: url),
+                  let response = try? JSONDecoder().decode(Response.self, from: data.0)
+            else { continuation.finish(); return }
             
-            for url in urls {
-              let pokemonDetail = try await JSONDecoder().decode(
+            for url in response.results.map(\.url) {
+              guard !Task.isCancelled
+              else {
+                NSLog("PokemonClientAsync.fetchPokemonSerial cancel")
+                break
+              }
+              guard let pokemonDetail = try? await JSONDecoder().decode(
                 PokemonDetails.self,
                 from: URLSession.shared.data(from: url).0
               )
+              else { continue }
               let pokemon = Pokemon(
                 id: UUID(),
                 name: pokemonDetail.name,
-                imageURL: pokemonDetail.sprites.front_default
+                imageURL: pokemonDetail.sprites.front_default,
+                url: url
               )
+              NSLog("PokemonClientAsync.fetchPokemonSerial fetching: \(url)")
               continuation.yield(pokemon)
             }
             continuation.finish()
           }
+          continuation.onTermination = { _ in
+            NSLog("PokemonClientAsync.fetchPokemonSerial terminate")
+            task.cancel()
+          }
         }
       },
+      
       fetchPokemonParallel: {
         AsyncStream { continuation in
-          Task {
+          let task = Task {
+            NSLog("PokemonClientAsync.fetchPokemonParallel begin")
             let urls = try await JSONDecoder().decode(
               Response.self,
-              from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!).0
+              from: URLSession.shared.data(from: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!).0
             ).results.map(\.url)
-                        
+            
             await withThrowingTaskGroup(of: Void.self) { group in
               for url in urls {
                 group.addTask {
@@ -53,14 +68,19 @@ extension PokemonClient {
                   let pokemon = Pokemon(
                     id: UUID(),
                     name: pokemonDetail.name,
-                    imageURL: pokemonDetail.sprites.front_default
+                    imageURL: pokemonDetail.sprites.front_default,
+                    url: url
                   )
+                  NSLog("PokemonClientAsync.fetchPokemonParallel fetching: \(url)")
                   continuation.yield(pokemon)
                 }
               }
             }
-            
             continuation.finish()
+          }
+          continuation.onTermination = { _ in
+            NSLog("PokemonClientAsync.fetchPokemonParallel terminate")
+            task.cancel()
           }
         }
       }
@@ -68,9 +88,8 @@ extension PokemonClient {
   }
 }
 
-// MARK: - Private
-
-private extension PokemonClient {
+// MARK: - JSON Parse Types
+private extension PokemonClientAsync {
   struct Response: Codable {
     let results: [EachResult]
     
@@ -102,20 +121,3 @@ private extension PokemonClient {
     }
   }
 }
-
-/**
- RESPONSE:
- {
- "count": 1154,
- "next": "https://pokeapi.co/api/v2/pokemon?offset=100&limit=100",
- "previous": null,
- "results": [
- {
- "name": "bulbasaur",
- "url": "https://pokeapi.co/api/v2/pokemon/1/"
- },
- {
- "name": "ivysaur",
- "url": "https://pokeapi.co/api/v2/pokemon/2/"
- },
- */

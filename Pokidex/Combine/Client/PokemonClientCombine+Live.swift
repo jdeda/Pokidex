@@ -2,9 +2,17 @@ import Foundation
 import Combine
 
 extension PokemonClientCombine {
+  
+  /**
+   This version connects to the pokeAPI:
+   <https://pokeapi.co/>
+   
+   All the Pokémon data you'll ever need in one place,
+   easily accessible through a modern RESTful API.
+   */
   static var live = Self.init(
-    fetchPokemon: {
-      let publisher = URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!)
+    fetchPokemonSerial: {
+      URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!)
         .map { data, response -> [URL] in
           guard
             let responseHTTP = response as? HTTPURLResponse,
@@ -19,25 +27,25 @@ extension PokemonClientCombine {
         }
         .replaceError(with: [])
         .flatMap(\.publisher)
-        .flatMap(maxPublishers: .max(1), { URLSession.shared.dataTaskPublisher(for: $0) })
+        .flatMap(maxPublishers: .max(1), URLSession.shared.dataTaskPublisher(for:))
         .compactMap { data, response -> Pokemon? in
           guard
             let responseHTTP = response as? HTTPURLResponse,
-            responseHTTP.statusCode == 200
+            responseHTTP.statusCode == 200,
+            let url = response.url
           else { return nil }
           do {
             let pd = try JSONDecoder().decode(PokemonDetails.self, from: data)
-            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default)
+            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default, url: url)
           } catch {
             return nil
           }
         }
-        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!))
+        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!, url: URL(string: "foo")!))
         .eraseToAnyPublisher()
-      return publisher
     }(),
     fetchPokemonParallel: {
-      let publisher = URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")!)
+      URLSession.shared.dataTaskPublisher(for: URL(string: "https://pokeapi.co/api/v2/pokemon?limit=100&offset=0")!)
         .map { data, response -> [URL] in
           guard
             let responseHTTP = response as? HTTPURLResponse,
@@ -56,23 +64,23 @@ extension PokemonClientCombine {
         .compactMap { data, response -> Pokemon? in
           guard
             let responseHTTP = response as? HTTPURLResponse,
-            responseHTTP.statusCode == 200
+            responseHTTP.statusCode == 200,
+            let url = response.url
           else { return nil }
           do {
             let pd = try JSONDecoder().decode(PokemonDetails.self, from: data)
-            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default)
+            return .init(id: UUID(), name: pd.name, imageURL: pd.sprites.front_default, url: url)
           } catch {
             return nil
           }
         }
-        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!))
+        .replaceError(with: Pokemon(id: UUID(), name: "", imageURL: URL(string: "foo")!, url: URL(string: "foo")!))
         .eraseToAnyPublisher()
-      return publisher
-    }())
+    }()
+  )
 }
 
-// MARK: - Private
-
+// MARK: - JSON Parse Types
 private extension PokemonClientCombine {
   struct Response: Codable {
     let results: [EachResult]
