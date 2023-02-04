@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9763849D2953773F00C22583 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9763849C2953773F00C22583 /* ContentView.swift */; };
+		9763849D2953773F00C22583 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9763849C2953773F00C22583 /* AppViewModel.swift */; };
 		976B2E37294F66F000E89511 /* PokemonClientCombine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976B2E36294F66F000E89511 /* PokemonClientCombine.swift */; };
 		976B2E39294F671100E89511 /* PokemonClientCombine+Live.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976B2E38294F671100E89511 /* PokemonClientCombine+Live.swift */; };
 		976B2E3B294F671C00E89511 /* PokemonClientCombine+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976B2E3A294F671C00E89511 /* PokemonClientCombine+Preview.swift */; };
@@ -15,6 +15,7 @@
 		97EBBE0F298C4856001F4470 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EBBE0E298C4856001F4470 /* Date.swift */; };
 		97EBBE11298D8961001F4470 /* CombineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EBBE10298D8961001F4470 /* CombineViewModel.swift */; };
 		97EBBE13298D899C001F4470 /* AsyncViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EBBE12298D899C001F4470 /* AsyncViewModel.swift */; };
+		97EBBE17298DDDF4001F4470 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EBBE16298DDDF4001F4470 /* AppView.swift */; };
 		97F46DCE294D389B0033BD99 /* PokemonClientAsync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F46DCD294D389B0033BD99 /* PokemonClientAsync.swift */; };
 		97F46DD1294D390F0033BD99 /* PokemonClientAsync+Live.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F46DD0294D390F0033BD99 /* PokemonClientAsync+Live.swift */; };
 		97F46DD3294D39180033BD99 /* PokemonClientAsync+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97F46DD2294D39180033BD99 /* PokemonClientAsync+Preview.swift */; };
@@ -26,7 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9763849C2953773F00C22583 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9763849C2953773F00C22583 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		976B2E36294F66F000E89511 /* PokemonClientCombine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonClientCombine.swift; sourceTree = "<group>"; };
 		976B2E38294F671100E89511 /* PokemonClientCombine+Live.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PokemonClientCombine+Live.swift"; sourceTree = "<group>"; };
 		976B2E3A294F671C00E89511 /* PokemonClientCombine+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PokemonClientCombine+Preview.swift"; sourceTree = "<group>"; };
@@ -34,6 +35,7 @@
 		97EBBE0E298C4856001F4470 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		97EBBE10298D8961001F4470 /* CombineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineViewModel.swift; sourceTree = "<group>"; };
 		97EBBE12298D899C001F4470 /* AsyncViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncViewModel.swift; sourceTree = "<group>"; };
+		97EBBE16298DDDF4001F4470 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		97F46DCD294D389B0033BD99 /* PokemonClientAsync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonClientAsync.swift; sourceTree = "<group>"; };
 		97F46DD0294D390F0033BD99 /* PokemonClientAsync+Live.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PokemonClientAsync+Live.swift"; sourceTree = "<group>"; };
 		97F46DD2294D39180033BD99 /* PokemonClientAsync+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PokemonClientAsync+Preview.swift"; sourceTree = "<group>"; };
@@ -86,6 +88,23 @@
 			path = Client;
 			sourceTree = "<group>";
 		};
+		97EBBE14298DDDD1001F4470 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				97EBBE0E298C4856001F4470 /* Date.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		97EBBE15298DDDE1001F4470 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				97EBBE16298DDDF4001F4470 /* AppView.swift */,
+				9763849C2953773F00C22583 /* AppViewModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 		97F46DCF294D38AB0033BD99 /* Client */ = {
 			isa = PBXGroup;
 			children = (
@@ -116,12 +135,12 @@
 			isa = PBXGroup;
 			children = (
 				97F8F1F6294903A500F3B9CB /* Main.swift */,
-				9763849C2953773F00C22583 /* ContentView.swift */,
+				97EBBE15298DDDE1001F4470 /* App */,
 				9763849A295374F400C22583 /* Combine */,
 				9763849B295374FC00C22583 /* Async */,
+				97EBBE14298DDDD1001F4470 /* Common */,
 				97F8F1FA294903AA00F3B9CB /* Assets.xcassets */,
 				97F8F1FC294903AA00F3B9CB /* Preview Content */,
-				97EBBE0E298C4856001F4470 /* Date.swift */,
 			);
 			path = Pokidex;
 			sourceTree = "<group>";
@@ -216,10 +235,11 @@
 				976B2E3B294F671C00E89511 /* PokemonClientCombine+Preview.swift in Sources */,
 				97F8F1F9294903A500F3B9CB /* AsyncView.swift in Sources */,
 				976B2E39294F671100E89511 /* PokemonClientCombine+Live.swift in Sources */,
-				9763849D2953773F00C22583 /* ContentView.swift in Sources */,
+				9763849D2953773F00C22583 /* AppViewModel.swift in Sources */,
 				97F46DD1294D390F0033BD99 /* PokemonClientAsync+Live.swift in Sources */,
 				97EBBE0F298C4856001F4470 /* Date.swift in Sources */,
 				97F8F1F7294903A500F3B9CB /* Main.swift in Sources */,
+				97EBBE17298DDDF4001F4470 /* AppView.swift in Sources */,
 				97EBBE11298D8961001F4470 /* CombineViewModel.swift in Sources */,
 				976B2E3D2950FE2600E89511 /* CombineView.swift in Sources */,
 				97EBBE13298D899C001F4470 /* AsyncViewModel.swift in Sources */,
