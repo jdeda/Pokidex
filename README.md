@@ -5,6 +5,14 @@
 ## Welcome to Pokidex!
 Pokidex is a simple native iOS app for demonstrating Swift 5.5's brand new structured concurrency. The app essentially displays a list of pokemon which is streamed into the system, fetching data serially or in-parallel. This feature is implemented in two ways, in Combine or Swift's new concurrency system. Both implementations use MVVM for state management. Pokemon data is fetched from the [PokeAPI](https://pokeapi.co/).
 
+### Table of Contents
+- [Pokidex](#pokidex)
+  - [Welcome to Pokidex!](#welcome-to-pokidex)
+    - [JSON to Swift](#json-to-swift)
+  - [Combine](#combine)
+  - [Async](#async)
+  - [More](#more)
+
 ### JSON to Swift
 The very first step in getting our data is converting JSON into Swift types. We want our end result to look like this:
 ```swift
