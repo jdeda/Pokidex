@@ -11,7 +11,7 @@ struct AsyncView: View {
     }
     .listStyle(.plain)
     .toolbar {
-      ToolbarItemGroup.init(placement: .navigationBarTrailing) {
+      ToolbarItemGroup(placement: .navigationBarTrailing) {
         Button {
           Task { await viewModel.fetchSerialButtonTapped() }
         } label: {
@@ -67,6 +67,8 @@ fileprivate struct PokemonView: View {
 // MARK: - Previews
 struct AsyncView_Previews: PreviewProvider {
   static var previews: some View {
-    AsyncView(viewModel: .init(pokemonClient: .preview))
+    NavigationStack {
+      AsyncView(viewModel: .init(pokemonClient: .preview))
+    }
   }
 }

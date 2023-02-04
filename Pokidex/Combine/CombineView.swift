@@ -11,7 +11,7 @@ struct CombineView: View {
     }
     .listStyle(.plain)
     .toolbar {
-      ToolbarItemGroup.init(placement: .navigationBarTrailing) {
+      ToolbarItemGroup(placement: .navigationBarTrailing) {
         Button {
           viewModel.fetchSerialButtonTapped()
         } label: {
@@ -67,6 +67,8 @@ fileprivate struct PokemonView: View {
 // MARK: - Previews
 struct CombineView_Previews: PreviewProvider {
   static var previews: some View {
-    CombineView(viewModel: .init(pokemonClient: .preview))
+    NavigationStack {
+      CombineView(viewModel: .init(pokemonClient: .preview))
+    }
   }
 }

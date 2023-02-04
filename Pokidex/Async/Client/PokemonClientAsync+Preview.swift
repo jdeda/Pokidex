@@ -5,21 +5,33 @@ extension PokemonClientAsync {
     .init(
       fetchPokemonSerial: {
         AsyncStream { continuation in
-          Task {
+          let task = Task {
             for model in models {
+              guard !Task.isCancelled
+              else { break }
               try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
               continuation.yield(model)
             }
+            continuation.finish()
+          }
+          continuation.onTermination = { _ in
+            task.cancel()
           }
         }
       },
       fetchPokemonParallel: {
         AsyncStream { continuation in
-          Task {
-            for model in models {
-              try await Task.sleep(nanoseconds: NSEC_PER_SEC) // Add a delay
-              continuation.yield(model)
+          let task = Task {
+            await withTaskGroup(of: Void.self) { group in
+              for model in models {
+                try? await Task.sleep(nanoseconds: NSEC_PER_MSEC) // Add a delay, but a much faster
+                continuation.yield(model)
+              }
+              continuation.finish()
             }
+          }
+          continuation.onTermination = { _ in
+            task.cancel()
           }
         }
       }
