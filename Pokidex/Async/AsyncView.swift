@@ -69,6 +69,7 @@ struct AsyncView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationStack {
       AsyncView(viewModel: .init(pokemonClient: .preview))
+        .navigationTitle(AppViewModel.ContentChoice.async.string)
     }
   }
 }

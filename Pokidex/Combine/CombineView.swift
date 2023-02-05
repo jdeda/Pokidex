@@ -69,6 +69,7 @@ struct CombineView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationStack {
       CombineView(viewModel: .init(pokemonClient: .preview))
+        .navigationTitle(AppViewModel.ContentChoice.combine.string)
     }
   }
 }
