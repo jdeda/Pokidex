@@ -7,6 +7,7 @@ Pokidex is a simple native iOS app for demonstrating Swift 5.5's brand new struc
 
 ## Table of Contents
   - [Welcome to Pokidex!](#welcome-to-pokidex)
+  - [Demo](#demo)
   - [Table of Contents](#table-of-contents)
   - [JSON to Swift](#json-to-swift)
   - [Combine](#combine)
@@ -15,6 +16,20 @@ Pokidex is a simple native iOS app for demonstrating Swift 5.5's brand new struc
   - [More](#more)
 
 <hr>
+
+## Demo
+**Fetch on Appear, Cancel on Dismiss, Restart, Inflight**
+
+<div>
+<img src="Assets/vid_fetchOnAppearOnDismiss_AdobeExpress.gif" alt="drawing" width="250"/>
+<img src="Assets/vid_cancellation_AdobeExpress.gif" width="250"/>
+</div>
+
+<br>
+
+**NSLog displaying fetch status, such as the URL for a Pokemon, if the stream began, finished, or cancelled**
+
+<img src="Assets/vid_fetchLogs_AdobeExpress.gif" width="750"/>
 
 ## JSON to Swift
 The very first step in getting our data is converting JSON into Swift types. We want our end result to look like this:
